@@ -3,6 +3,7 @@
 GRVT BTC网格交易策略 - 完整版（按照JS逻辑重构）
 集成币安API RSI/ADX技术指标检查
 """
+import math
 import time
 import logging
 import asyncio
@@ -426,7 +427,6 @@ class GridStrategy:
                 final_sell_ratio = max(0, base_sell_ratio - sell_reduction)
                 final_buy_ratio = 1 - final_sell_ratio
                 logger.info(f"⚖️  比例调整: 卖单{final_sell_ratio * 100:.0f}% / 买单{final_buy_ratio * 100:.0f}%")
-
         # 确保比例在合理范围内 - 按照JS逻辑
         if not is_at_limit:
             final_buy_ratio = max(0.1, min(0.9, final_buy_ratio))
@@ -446,7 +446,7 @@ class GridStrategy:
         logger.info(f"订单数量: {sell_count}卖 + {buy_count}买 = {sell_count + buy_count}总")
 
         # 计算卖单价格（从卖一价上方开始）- 完全按照JS逻辑
-        sell_start = ((market_data.ask_price + cfg["SAFE_GAP"]) // interval) * interval
+        sell_start = math.ceil((market_data.ask_price + cfg["SAFE_GAP"]) / interval) * interval
         ideal_sell_prices = []
         for i in range(sell_count):
             price = sell_start + i * interval
@@ -714,19 +714,21 @@ class GridStrategy:
                 order_type = target_order['type']
                 target_price = target_order['price']
 
-                # === 新增：检查是否需要跳过撤单（如果价格接近当前价格）===
-                if current_price > 0:
-                    cfg = GRID_STRATEGY_CONFIG
-                    price_diff = abs(target_price - current_price)
-                    is_near_current_price = price_diff <= cfg["BASE_PRICE_INTERVAL"] * (cfg["MAX_MULTIPLIER"] / 4)
-
-                    if is_near_current_price:
-                        logger.info(
-                            f"  ⏭️ 跳过撤单: {order_type}单 @ ${target_price:.2f} (距离当前价 ${price_diff:.1f}$，太近)")
-                        skipped_count += 1
-                        continue
-
-                logger.info(f"  正在撤销{order_type}单 @ ${target_price:.2f}")
+                # # === 新增：检查是否需要跳过撤单（如果价格接近当前价格）===
+                # if current_price > 0:
+                #     cfg = GRID_STRATEGY_CONFIG
+                #     #订单价格-限价
+                #     price_diff = abs(target_price - current_price)
+                #     #差价<=间距15(15/4)
+                #     is_near_current_price = price_diff <= cfg["BASE_PRICE_INTERVAL"] * (cfg["MAX_MULTIPLIER"] // 4)
+                #
+                #     if is_near_current_price:
+                #         logger.info(
+                #             f"  ⏭️ 跳过撤单: {order_type}单 @ ${target_price:.2f} (距离当前价 ${price_diff:.1f}$，太近)")
+                #         skipped_count += 1
+                #         continue
+                #
+                # logger.info(f"  正在撤销{order_type}单 @ ${target_price:.2f}")
 
                 # 查找匹配价格的订单（使用价格匹配）
                 matched_order = None
