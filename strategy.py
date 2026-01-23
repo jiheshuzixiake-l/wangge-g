@@ -714,21 +714,21 @@ class GridStrategy:
                 order_type = target_order['type']
                 target_price = target_order['price']
 
-                # # === 新增：检查是否需要跳过撤单（如果价格接近当前价格）===
-                # if current_price > 0:
-                #     cfg = GRID_STRATEGY_CONFIG
-                #     #订单价格-限价
-                #     price_diff = abs(target_price - current_price)
-                #     #差价<=间距15(15/4)
-                #     is_near_current_price = price_diff <= cfg["BASE_PRICE_INTERVAL"] * (cfg["MAX_MULTIPLIER"] // 4)
-                #
-                #     if is_near_current_price:
-                #         logger.info(
-                #             f"  ⏭️ 跳过撤单: {order_type}单 @ ${target_price:.2f} (距离当前价 ${price_diff:.1f}$，太近)")
-                #         skipped_count += 1
-                #         continue
-                #
-                # logger.info(f"  正在撤销{order_type}单 @ ${target_price:.2f}")
+                # === 新增：检查是否需要跳过撤单（如果价格接近当前价格）===
+                if current_price > 0:
+                    cfg = GRID_STRATEGY_CONFIG
+                    #订单价格-限价
+                    price_diff = abs(target_price - current_price)
+                    #差价<=间距15(15/4)
+                    is_near_current_price = price_diff <= cfg["BASE_PRICE_INTERVAL"] * (cfg["MAX_MULTIPLIER"] // 4)
+                
+                    if is_near_current_price:
+                        logger.info(
+                            f"  ⏭️ 跳过撤单: {order_type}单 @ ${target_price:.2f} (距离当前价 ${price_diff:.1f}$，太近)")
+                        skipped_count += 1
+                        continue
+                
+                logger.info(f"  正在撤销{order_type}单 @ ${target_price:.2f}")
 
                 # 查找匹配价格的订单（使用价格匹配）
                 matched_order = None
@@ -1031,3 +1031,4 @@ class GridStrategy:
             print(f"  状态: 正常")
 
         print("=" * 60)
+
