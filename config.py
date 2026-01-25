@@ -61,8 +61,8 @@ DATA_SOURCE_CONFIG = {
 
 # ========== 币安 API 配置 ==========
 BINANCE_CONFIG = {
-    "api_key": "5yYKYvZ2Oy6R0G0CUCgfGfg5sntCjDgTqxoQx99fzAGo46Tbuw0YbSYrzkhMtaAI",
-    "api_secret": "KzLfF9RugANCDDRy36PkZgDYCvr2bWTfsossW7EPLt1MQTLqUVZWWdiFeo3zvCHb",
+    "api_key": "",
+    "api_secret": "",
     "symbol": "BTC/USDT",
     "timeframe": "15m",
     "ohlcv_limit": 500,
@@ -81,4 +81,5 @@ INDICATOR_CONFIG = {
     "adx_strong_trend": 30,
     "fetch_timeout": 10,
     "cache_seconds": 30,
+
 }
